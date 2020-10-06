@@ -1,16 +1,15 @@
-# Create a JavaScript Action using TypeScript
 
 ![build-test](https://github.com/Surgo/docker-smart-tag-action/workflows/build-test/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-##  About
+#  Generate Docker tag from for each branches or tags
 
 Generate Docker tag from for each branches or tags
 
 > :bulb: See also:
 > * [docker/build-push-action](https://github.com/docker/build-push-action/)
 
-### Example (smart) tag
+## Example (smart) tag
 
 * Pull request: `pr-<pull request number>`
 * Publish with tags: `v1.0.0` => `1.0.0`, `1.0`, `1` and `latest`
@@ -18,7 +17,7 @@ Generate Docker tag from for each branches or tags
     * Default branch => `edge`
     * Scheduled build => `nightly`
 
-## Usage
+# Usage
 
 ```yaml
 jobs:
