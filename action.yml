@@ -14,6 +14,8 @@ inputs:
     default: main
   tag_with_sha:
     description: Tags the built image with the git short SHA prefixed with `sha-`.
+  ref:
+    description: Custom ref for if you need to overide it
 outputs:
   tag:
     description: Smart tag
