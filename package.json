@@ -1,6 +1,6 @@
 {
   "name": "docker-gitops-tag-action",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "description": "Generate GitOps friendly sortable Docker image tags",
   "main": "lib/main.js",
