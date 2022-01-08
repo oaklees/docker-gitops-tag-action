@@ -1,16 +1,16 @@
-name: Guess tag for Docker images
-description: Guess Docker tag from each branches or tags
-author: Kosei Kitahara
+name: Docke GitOps Tag Action
+description: Generate GitOps friendly sortable Docker image tags
+author: Andrew Lees
 branding:
   icon: 'tag'
   color: 'black'
 inputs:
   docker_image:
-    description: The name of the Docker image append the smart tag
+    description: The name of the Docker image prepend the generated tag
     required: true
 outputs:
   tag:
-    description: Smart tag
+    description: Tagged image.
 runs:
   using: node12
   main: dist/index.js
