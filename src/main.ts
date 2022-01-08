@@ -1,29 +1,20 @@
-import {getSmartTag} from './smartTag'
+import { getSmartTag } from './smartTag'
 import * as core from '@actions/core'
+import { GithubRefs } from './types'
 
 async function run(): Promise<void> {
   try {
     const dockerImage: string = core.getInput('docker_image')
-    const defaultBranch: string = core.getInput('default_branch') || 'main'
-    const tagWithSha: boolean = core.getInput('tag_with_sha') === 'true'
     const customRef: string = core.getInput('ref')
 
-    const githubRef: string = customRef || process.env['GITHUB_REF'] || 'noop'
-    const githubSha: string = process.env['GITHUB_SHA'] || 'undefined'
-    const githubEventName: string =
-      process.env['GITHUB_EVENT_NAME'] || 'undefined'
+    const githubRefs: GithubRefs = {
+      baseRef: process.env['GITHUB_BASE_REF'] || '',
+      ref: customRef || process.env['GITHUB_REF'] || 'noop',
+      sha: process.env['GITHUB_SHA'] || 'undefined',
+      eventName: process.env['GITHUB_EVENT_NAME'] || 'undefined',
+    }
 
-    core.setOutput(
-      'tag',
-      getSmartTag(
-        dockerImage,
-        githubRef,
-        githubSha,
-        githubEventName,
-        defaultBranch,
-        tagWithSha
-      )
-    )
+    core.setOutput('tag', getSmartTag(dockerImage, githubRefs))
   } catch (error) {
     core.setFailed(error.message)
   }

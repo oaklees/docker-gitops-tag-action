@@ -1,4 +1,5 @@
 import * as semver from 'semver'
+import { GithubRefs } from './types'
 
 function getSmartTagFromTag(dockerImage: string, githubRef: string): string {
   const version = githubRef.replace('refs/tags/', '').replace(/\//g, '-')
@@ -7,67 +8,43 @@ function getSmartTagFromTag(dockerImage: string, githubRef: string): string {
     return `${dockerImage}:latest,${dockerImage}:${version}`
   }
   const tags = `${dockerImage}:${semanticVersion}`
-  const majorVerion = semver.major(semanticVersion)
-  const minorVerion = semver.minor(semanticVersion)
-  return `${dockerImage}:latest,${dockerImage}:${majorVerion},${dockerImage}:${majorVerion}.${minorVerion},${tags}`
+  const majorVersion = semver.major(semanticVersion)
+  const minorVersion = semver.minor(semanticVersion)
+  return `${dockerImage}:latest,${dockerImage}:${majorVersion},${dockerImage}:${majorVersion}.${minorVersion},${tags}`
 }
 
-function getSmartTagFromPullRequest(
-  dockerImage: string,
-  githubRef: string
-): string {
-  const version = githubRef.replace('refs/pull/', '').replace('/merge', '')
-  return `${dockerImage}:pr-${version}`
+function getSmartTagFromPullRequest(dockerImage: string, githubRefs: GithubRefs): string {
+  const { ref, baseRef, sha } = githubRefs
+  const base = baseRef.replace('refs/heads/', '').replace(/\//g, '-')
+  const version = ref.replace('refs/pull/', '').replace('/merge', '')
+  return timestamped(`${dockerImage}:${base}-pr-${version}-${sha.substr(0, 8)}`)
 }
 
-function getSmartTagFromBranch(
-  dockerImage: string,
-  githubRef: string,
-  defaultBranch: string
-): string {
-  const version = githubRef.replace('refs/heads/', '').replace(/\//g, '-')
-  if (version === defaultBranch) {
-    return `${dockerImage}:edge`
-  }
-  return `${dockerImage}:${version}`
+function getSmartTagFromBranch(dockerImage: string, { ref, sha }: GithubRefs): string {
+  const version = ref.replace('refs/heads/', '').replace(/\//g, '-')
+
+  return timestamped(`${dockerImage}:${version}-${sha.substr(0, 8)}`)
 }
 
-function getTag(
-  dockerImage: string,
-  githubRef: string,
-  githubSha: string,
-  githubEventName: string,
-  defaultBranch: string
-): string {
-  if (githubEventName === 'schedule') {
+function getTag(dockerImage: string, githubRefs: GithubRefs): string {
+  const { eventName, ref } = githubRefs
+  if (eventName === 'schedule') {
     return `${dockerImage}:nightly`
-  } else if (githubRef.match(/refs\/tags\//)) {
-    return getSmartTagFromTag(dockerImage, githubRef)
-  } else if (githubRef.match(/refs\/pull\//)) {
-    return getSmartTagFromPullRequest(dockerImage, githubRef)
-  } else if (githubRef.match(/refs\/heads\//)) {
-    return getSmartTagFromBranch(dockerImage, githubRef, defaultBranch)
+  } else if (ref.match(/refs\/tags\//)) {
+    return getSmartTagFromTag(dockerImage, ref)
+  } else if (ref.match(/refs\/pull\//)) {
+    return getSmartTagFromPullRequest(dockerImage, githubRefs)
+  } else if (ref.match(/refs\/heads\//)) {
+    return getSmartTagFromBranch(dockerImage, githubRefs)
   }
   return `${dockerImage}:noop`
 }
 
-export function getSmartTag(
-  dockerImage: string,
-  githubRef: string,
-  githubSha: string,
-  githubEventName: string,
-  defaultBranch: string,
-  tagWithSha: boolean
-): string {
-  const tag = getTag(
-    dockerImage,
-    githubRef,
-    githubSha,
-    githubEventName,
-    defaultBranch
-  )
-  if (tagWithSha) {
-    return `${tag},${dockerImage}:sha-${githubSha.substr(0, 8)}`
-  }
-  return tag
+export function getSmartTag(dockerImage: string, githubRefs: GithubRefs): string {
+  return getTag(dockerImage, githubRefs)
+}
+
+function timestamped(tag: string): string {
+  const timestamp = Math.ceil(Date.now() / 1000)
+  return `${tag}-${timestamp}`
 }
