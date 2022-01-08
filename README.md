@@ -41,9 +41,9 @@ jobs:
 
 The following inputs can be used as `step.with` keys:
 
-| Name              | Type      | Description                       |
-|-------------------|-----------|-----------------------------------|
-| `docker_image`    | String    | Docker image name e.g. `name/app` |
+| Name              | Type      | Description                                   |
+|-------------------|-----------|-----------------------------------------------|
+| `docker_image`    | String    | Docker image name e.g. `my-repository/my-app` |
 
 [See example config](.github/workflows/test.yml)
 
