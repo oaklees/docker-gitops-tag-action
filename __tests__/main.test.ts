@@ -74,7 +74,7 @@ test('test runs', () => {
   process.env['GITHUB_EVENT_NAME'] = 'push'
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecSyncOptions = {
-    env: process.env
+    env: process.env,
   }
   console.log(cp.execSync(`node ${ip}`, options).toString())
 })

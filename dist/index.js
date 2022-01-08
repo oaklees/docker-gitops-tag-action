@@ -42,13 +42,14 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const dockerImage = core.getInput('docker_image');
-            const defaultBranch = core.getInput('default_branch') || 'main';
-            const tagWithSha = core.getInput('tag_with_sha') === 'true';
             const customRef = core.getInput('ref');
-            const githubRef = customRef || process.env['GITHUB_REF'] || 'noop';
-            const githubSha = process.env['GITHUB_SHA'] || 'undefined';
-            const githubEventName = process.env['GITHUB_EVENT_NAME'] || 'undefined';
-            core.setOutput('tag', smartTag_1.getSmartTag(dockerImage, githubRef, githubSha, githubEventName, defaultBranch, tagWithSha));
+            const githubRefs = {
+                baseRef: process.env['GITHUB_BASE_REF'] || '',
+                ref: customRef || process.env['GITHUB_REF'] || 'noop',
+                sha: process.env['GITHUB_SHA'] || 'undefined',
+                eventName: process.env['GITHUB_EVENT_NAME'] || 'undefined',
+            };
+            core.setOutput('tag', smartTag_1.getSmartTag(dockerImage, githubRefs));
         }
         catch (error) {
             core.setFailed(error.message);
@@ -94,44 +95,44 @@ function getSmartTagFromTag(dockerImage, githubRef) {
         return `${dockerImage}:latest,${dockerImage}:${version}`;
     }
     const tags = `${dockerImage}:${semanticVersion}`;
-    const majorVerion = semver.major(semanticVersion);
-    const minorVerion = semver.minor(semanticVersion);
-    return `${dockerImage}:latest,${dockerImage}:${majorVerion},${dockerImage}:${majorVerion}.${minorVerion},${tags}`;
+    const majorVersion = semver.major(semanticVersion);
+    const minorVersion = semver.minor(semanticVersion);
+    return `${dockerImage}:latest,${dockerImage}:${majorVersion},${dockerImage}:${majorVersion}.${minorVersion},${tags}`;
 }
-function getSmartTagFromPullRequest(dockerImage, githubRef) {
-    const version = githubRef.replace('refs/pull/', '').replace('/merge', '');
-    return `${dockerImage}:pr-${version}`;
+function getSmartTagFromPullRequest(dockerImage, githubRefs) {
+    const { ref, baseRef, sha } = githubRefs;
+    const base = baseRef.replace('refs/heads/', '').replace(/\//g, '-');
+    const version = ref.replace('refs/pull/', '').replace('/merge', '');
+    return timestamped(`${dockerImage}:${base}-pr-${version}-${sha.substr(0, 8)}`);
 }
-function getSmartTagFromBranch(dockerImage, githubRef, defaultBranch) {
-    const version = githubRef.replace('refs/heads/', '').replace(/\//g, '-');
-    if (version === defaultBranch) {
-        return `${dockerImage}:edge`;
-    }
-    return `${dockerImage}:${version}`;
+function getSmartTagFromBranch(dockerImage, { ref, sha }) {
+    const version = ref.replace('refs/heads/', '').replace(/\//g, '-');
+    return timestamped(`${dockerImage}:${version}-${sha.substr(0, 8)}`);
 }
-function getTag(dockerImage, githubRef, githubSha, githubEventName, defaultBranch) {
-    if (githubEventName === 'schedule') {
+function getTag(dockerImage, githubRefs) {
+    const { eventName, ref } = githubRefs;
+    if (eventName === 'schedule') {
         return `${dockerImage}:nightly`;
     }
-    else if (githubRef.match(/refs\/tags\//)) {
-        return getSmartTagFromTag(dockerImage, githubRef);
+    else if (ref.match(/refs\/tags\//)) {
+        return getSmartTagFromTag(dockerImage, ref);
     }
-    else if (githubRef.match(/refs\/pull\//)) {
-        return getSmartTagFromPullRequest(dockerImage, githubRef);
+    else if (ref.match(/refs\/pull\//)) {
+        return getSmartTagFromPullRequest(dockerImage, githubRefs);
     }
-    else if (githubRef.match(/refs\/heads\//)) {
-        return getSmartTagFromBranch(dockerImage, githubRef, defaultBranch);
+    else if (ref.match(/refs\/heads\//)) {
+        return getSmartTagFromBranch(dockerImage, githubRefs);
     }
     return `${dockerImage}:noop`;
 }
-function getSmartTag(dockerImage, githubRef, githubSha, githubEventName, defaultBranch, tagWithSha) {
-    const tag = getTag(dockerImage, githubRef, githubSha, githubEventName, defaultBranch);
-    if (tagWithSha) {
-        return `${tag},${dockerImage}:sha-${githubSha.substr(0, 8)}`;
-    }
-    return tag;
+function getSmartTag(dockerImage, githubRefs) {
+    return getTag(dockerImage, githubRefs);
 }
 exports.getSmartTag = getSmartTag;
+function timestamped(tag) {
+    const timestamp = Math.ceil(Date.now() / 1000);
+    return `${tag}-${timestamp}`;
+}
 
 
 /***/ }),
