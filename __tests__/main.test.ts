@@ -66,16 +66,15 @@ describe.each([
   }
 )
 
-// test('test runs', () => {
-//   process.env['INPUT_DOCKER_IMAGE'] = 'name/app'
-//   process.env['INPUT_DEFAULT_BRANCH'] = 'main'
-//   process.env['INPUT_TAG_WITH_SHA'] = 'false'
-//   process.env['GITHUB_REF'] = 'refs/heads/topic/some/my_branch'
-//   process.env['GITHUB_SHA'] = githubSha
-//   process.env['GITHUB_EVENT_NAME'] = 'push'
-//   const ip = path.join(__dirname, '..', 'lib', 'main.js')
-//   const options: cp.ExecSyncOptions = {
-//     env: process.env
-//   }
-//   console.log(cp.execSync(`node ${ip}`, options).toString())
-// })
+test('test runs', () => {
+  process.env['INPUT_DOCKER_IMAGE'] = 'repo/app'
+  process.env['INPUT_DEFAULT_BRANCH'] = 'main'
+  process.env['GITHUB_REF'] = 'refs/heads/topic/some/my_branch'
+  process.env['GITHUB_SHA'] = sha
+  process.env['GITHUB_EVENT_NAME'] = 'push'
+  const ip = path.join(__dirname, '..', 'lib', 'main.js')
+  const options: cp.ExecSyncOptions = {
+    env: process.env
+  }
+  console.log(cp.execSync(`node ${ip}`, options).toString())
+})
