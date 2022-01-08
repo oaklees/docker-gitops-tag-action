@@ -1,9 +1,9 @@
-name: Docke GitOps Tag Action
+name: Docker GitOps Tag Action
 description: Generate GitOps friendly sortable Docker image tags
 author: Andrew Lees
 branding:
-  icon: 'tag'
-  color: 'black'
+  icon: 'git-branch'
+  color: 'blue'
 inputs:
   docker_image:
     description: The name of the Docker image prepend the generated tag
