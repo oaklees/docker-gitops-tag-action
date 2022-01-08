@@ -1,21 +1,22 @@
 
-![build-test](https://github.com/Surgo/docker-smart-tag-action/workflows/build-test/badge.svg)
+![build-test](https://github.com/oaklees/docker-smart-tag-action/workflows/build-test/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-#  Generate Docker tag from for each branches or tags
+#  Generate GitOps friendly Docker tags
 
-Generate Docker tag from for each branches or tags
+Action to generate GitOps friendly Docker tags, heavily inspired by the team at [FluxCD](https://fluxcd.io/docs/guides/sortable-image-tags/#other-things-to-include-in-the-image-tag).
 
-> :bulb: See also:
-> * [docker/build-push-action](https://github.com/docker/build-push-action/)
+## What will it generate?
 
-## Example (smart) tag
+For the following triggers.
 
-* Pull request: `pr-<pull request number>`
-* Publish with tags: `v1.0.0` => `1.0.0`, `1.0`, `1` and `latest`
-* Branch: `topic/my_branch` => `topic-my_branch`
-    * Default branch => `edge`
-    * Scheduled build => `nightly`
+| Trigger event  | Ref                            | Generated tags                                                |
+|----------------|--------------------------------|---------------------------------------------------------------|
+| `pull_request` | `refs/heads/my-target-branch`  | `my-target-branch-pr-<pull request number>-<sha>-<timestamp>` |
+| `tag`          | `refs/tags/v1.2.3`             | `1.0.0`, `1.0`, `1` and `latest`                              |
+| `push`         | `refs/heads/feature/my-branch` | `feature-my-branch-<sha>-<timestamp>`                         |
+| `push`         | `refs/heads/main`              | `main-<sha>-<timestamp>`                                      |
+| `schedule`     | `refs/heads/main`              | `nightly`                                                     |
 
 # Usage
 
@@ -26,9 +27,9 @@ jobs:
   steps:
     - name: Get smart tag
       id: prepare
-      uses: Surgo/docker-smart-tag-action@v1
+      uses: oaklees/docker-smart-tag-action@v1
       with:
-        docker_image: name/app
+        docker_image: repo/app
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
@@ -38,23 +39,19 @@ jobs:
 
 ## Customizing
 
-### inputs
+The following inputs can be used as `step.with` keys:
 
-Following inputs can be used as `step.with` keys
-
-| Name              | Type      | Description                       |
-|-------------------|-----------|-----------------------------------|
-| `docker_image`    | String    | Docker image name e.g. `name/app` |
-| `default_branch`  | String    | Default branch (default `main`). If not main, specify `${{ github.event.repository.default_branch }}` or your default branch. |
-| `tag_with_sha`    | String    | Tags the built image with the git short SHA prefixed with `sha-`. |
+| Name              | Type      | Description                                   |
+|-------------------|-----------|-----------------------------------------------|
+| `docker_image`    | String    | Docker image name e.g. `my-repository/my-app` |
 
 [See example config](.github/workflows/test.yml)
 
-### outputs
+## Outputs
 
-Following outputs are available
+The following outputs are available
 
-* `tag`: Smart tag
+* `tag`: The fully qualified image with tags appended.
 
 ## Development
 
@@ -67,5 +64,5 @@ npm run build
 
 ```
 npm run build
-npm t
+npm run test
 ```
