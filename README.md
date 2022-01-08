@@ -1,20 +1,17 @@
 
-![build-test](https://github.com/Surgo/docker-smart-tag-action/workflows/build-test/badge.svg)
+![build-test](https://github.com/oaklees/docker-smart-tag-action/workflows/build-test/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-#  Generate Docker tag from for each branches or tags
+#  Generate GitOps friendly Docker tags
 
-Generate Docker tag from for each branches or tags
-
-> :bulb: See also:
-> * [docker/build-push-action](https://github.com/docker/build-push-action/)
+Generate GitOps friendly Docker tags
 
 ## Example (smart) tag
 
-* Pull request: `pr-<pull request number>`
+* Pull request: `<base-ref>-pr-<pull request number>-<sha>-<timestamp>`
 * Publish with tags: `v1.0.0` => `1.0.0`, `1.0`, `1` and `latest`
-* Branch: `topic/my_branch` => `topic-my_branch`
-    * Default branch => `edge`
+* Branch: `topic/my_branch` => `topic-my_branch-<sha>-<timestamp>`
+    * Default branch => `<default branch>-<sha>-<timestamp>`
     * Scheduled build => `nightly`
 
 # Usage
@@ -26,9 +23,9 @@ jobs:
   steps:
     - name: Get smart tag
       id: prepare
-      uses: Surgo/docker-smart-tag-action@v1
+      uses: oaklees/docker-smart-tag-action@v1
       with:
-        docker_image: name/app
+        docker_image: repo/app
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
@@ -45,8 +42,6 @@ Following inputs can be used as `step.with` keys
 | Name              | Type      | Description                       |
 |-------------------|-----------|-----------------------------------|
 | `docker_image`    | String    | Docker image name e.g. `name/app` |
-| `default_branch`  | String    | Default branch (default `main`). If not main, specify `${{ github.event.repository.default_branch }}` or your default branch. |
-| `tag_with_sha`    | String    | Tags the built image with the git short SHA prefixed with `sha-`. |
 
 [See example config](.github/workflows/test.yml)
 
