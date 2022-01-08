@@ -4,15 +4,19 @@
 
 #  Generate GitOps friendly Docker tags
 
-Generate GitOps friendly Docker tags
+Action to generate GitOps friendly Docker tags, heavily inspired by the team at [FluxCD](https://fluxcd.io/docs/guides/sortable-image-tags/#other-things-to-include-in-the-image-tag).
 
-## Example (smart) tag
+## What will it generate?
 
-* Pull request: `<base-ref>-pr-<pull request number>-<sha>-<timestamp>`
-* Publish with tags: `v1.0.0` => `1.0.0`, `1.0`, `1` and `latest`
-* Branch: `topic/my_branch` => `topic-my_branch-<sha>-<timestamp>`
-    * Default branch => `<default branch>-<sha>-<timestamp>`
-    * Scheduled build => `nightly`
+For the following triggers.
+
+| Trigger event  | Ref                            | Generated tags                                                |
+|----------------|--------------------------------|---------------------------------------------------------------|
+| `pull_request` | `refs/heads/my-target-branch`  | `my-target-branch-pr-<pull request number>-<sha>-<timestamp>` |
+| `tag`          | `refs/tags/v1.2.3`             | `1.0.0`, `1.0`, `1` and `latest`                              |
+| `push`         | `refs/heads/feature/my-branch` | `feature-my-branch-<sha>-<timestamp>`                         |
+| `push`         | `refs/heads/main`              | `main-<sha>-<timestamp>`                                      |
+| `schedule`     | `refs/heads/main`              | `nightly`                                                     |
 
 # Usage
 
@@ -35,9 +39,7 @@ jobs:
 
 ## Customizing
 
-### inputs
-
-Following inputs can be used as `step.with` keys
+The following inputs can be used as `step.with` keys:
 
 | Name              | Type      | Description                       |
 |-------------------|-----------|-----------------------------------|
@@ -45,11 +47,11 @@ Following inputs can be used as `step.with` keys
 
 [See example config](.github/workflows/test.yml)
 
-### outputs
+## Outputs
 
-Following outputs are available
+The following outputs are available
 
-* `tag`: Smart tag
+* `tag`: The fully qualified image with tags appended.
 
 ## Development
 
