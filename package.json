@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:oaklees/docker-smart-tag-action.git"
+    "url": "git@github.com:oaklees/docker-gitops-tag-action.git"
   },
   "keywords": [
     "actions",

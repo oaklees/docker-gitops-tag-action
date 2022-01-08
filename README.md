@@ -1,22 +1,20 @@
 
-![build-test](https://github.com/oaklees/docker-smart-tag-action/workflows/build-test/badge.svg)
+![build-test](https://github.com/oaklees/docker-gitops-tag-action/workflows/build-test/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 #  Generate GitOps friendly Docker tags
 
-Action to generate GitOps friendly Docker tags, heavily inspired by the team at [FluxCD](https://fluxcd.io/docs/guides/sortable-image-tags/#other-things-to-include-in-the-image-tag).
+An action to generate GitOps friendly Docker tags, heavily inspired by the team at [FluxCD](https://fluxcd.io/docs/guides/sortable-image-tags/#other-things-to-include-in-the-image-tag), that utilises branch names, commit SHA, and timestamps to create unique tags.
 
 ## What will it generate?
 
-For the following triggers.
-
-| Trigger event  | Ref                            | Generated tags                                                |
-|----------------|--------------------------------|---------------------------------------------------------------|
-| `pull_request` | `refs/heads/my-target-branch`  | `my-target-branch-pr-<pull request number>-<sha>-<timestamp>` |
-| `tag`          | `refs/tags/v1.2.3`             | `1.0.0`, `1.0`, `1` and `latest`                              |
-| `push`         | `refs/heads/feature/my-branch` | `feature-my-branch-<sha>-<timestamp>`                         |
-| `push`         | `refs/heads/main`              | `main-<sha>-<timestamp>`                                      |
-| `schedule`     | `refs/heads/main`              | `nightly`                                                     |
+| Trigger event  | Ref                            | Generated tags                                |
+|----------------|--------------------------------|-----------------------------------------------|
+| `pull_request` | `refs/heads/my-target-branch`  | `my-target-branch-pr-<pr#>-<sha>-<timestamp>` |
+| `tag`          | `refs/tags/v1.2.3`             | `1.0.0`, `1.0`, `1` and `latest`              |
+| `push`         | `refs/heads/feature/my-branch` | `feature-my-branch-<sha>-<timestamp>`         |
+| `push`         | `refs/heads/main`              | `main-<sha>-<timestamp>`                      |
+| `schedule`     | `refs/heads/main`              | `nightly`                                     |
 
 # Usage
 
@@ -25,9 +23,9 @@ jobs:
   main:
     runs-on: ubuntu-latest
   steps:
-    - name: Get smart tag
+    - name: Generate image tags
       id: prepare
-      uses: oaklees/docker-smart-tag-action@v1
+      uses: oaklees/docker-gitops-tag-action@v0.0.1
       with:
         docker_image: repo/app
     - name: Build and push
