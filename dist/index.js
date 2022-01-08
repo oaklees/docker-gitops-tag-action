@@ -88,8 +88,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getSmartTag = void 0;
 const semver = __importStar(__webpack_require__(911));
-function getSmartTagFromTag(dockerImage, githubRef) {
-    const version = githubRef.replace('refs/tags/', '').replace(/\//g, '-');
+function getSmartTagFromTag(dockerImage, githubRefs) {
+    const version = githubRefs.ref.replace('refs/tags/', '').replace(/\//g, '-').toLowerCase();
     const semanticVersion = semver.clean(version);
     if (!semanticVersion) {
         return `${dockerImage}:latest,${dockerImage}:${version}`;
@@ -101,12 +101,12 @@ function getSmartTagFromTag(dockerImage, githubRef) {
 }
 function getSmartTagFromPullRequest(dockerImage, githubRefs) {
     const { ref, baseRef, sha } = githubRefs;
-    const base = baseRef.replace('refs/heads/', '').replace(/\//g, '-');
+    const base = baseRef.replace('refs/heads/', '').replace(/\//g, '-').toLowerCase();
     const version = ref.replace('refs/pull/', '').replace('/merge', '');
     return timestamped(`${dockerImage}:${base}-pr-${version}-${sha.substr(0, 8)}`);
 }
 function getSmartTagFromBranch(dockerImage, { ref, sha }) {
-    const version = ref.replace('refs/heads/', '').replace(/\//g, '-');
+    const version = ref.replace('refs/heads/', '').replace(/\//g, '-').toLowerCase();
     return timestamped(`${dockerImage}:${version}-${sha.substr(0, 8)}`);
 }
 function getTag(dockerImage, githubRefs) {
@@ -115,7 +115,7 @@ function getTag(dockerImage, githubRefs) {
         return `${dockerImage}:nightly`;
     }
     else if (ref.match(/refs\/tags\//)) {
-        return getSmartTagFromTag(dockerImage, ref);
+        return getSmartTagFromTag(dockerImage, githubRefs);
     }
     else if (ref.match(/refs\/pull\//)) {
         return getSmartTagFromPullRequest(dockerImage, githubRefs);

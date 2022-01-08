@@ -30,6 +30,13 @@ describe.each([
     'repo/app:topic-some-my_branch-ffac537e-1641647437',
   ],
   [
+    // Push branch with uppercase
+    'refs/heads/topic/SOME/my_branch',
+    '',
+    'push',
+    'repo/app:topic-some-my_branch-ffac537e-1641647437',
+  ],
+  [
     // Default branch
     'refs/heads/default',
     '',

@@ -1,8 +1,8 @@
 import * as semver from 'semver'
 import { GithubRefs } from './types'
 
-function getSmartTagFromTag(dockerImage: string, githubRef: string): string {
-  const version = githubRef.replace('refs/tags/', '').replace(/\//g, '-')
+function getSmartTagFromTag(dockerImage: string, githubRefs: GithubRefs): string {
+  const version = githubRefs.ref.replace('refs/tags/', '').replace(/\//g, '-').toLowerCase()
   const semanticVersion = semver.clean(version)
   if (!semanticVersion) {
     return `${dockerImage}:latest,${dockerImage}:${version}`
@@ -15,13 +15,13 @@ function getSmartTagFromTag(dockerImage: string, githubRef: string): string {
 
 function getSmartTagFromPullRequest(dockerImage: string, githubRefs: GithubRefs): string {
   const { ref, baseRef, sha } = githubRefs
-  const base = baseRef.replace('refs/heads/', '').replace(/\//g, '-')
+  const base = baseRef.replace('refs/heads/', '').replace(/\//g, '-').toLowerCase()
   const version = ref.replace('refs/pull/', '').replace('/merge', '')
   return timestamped(`${dockerImage}:${base}-pr-${version}-${sha.substr(0, 8)}`)
 }
 
 function getSmartTagFromBranch(dockerImage: string, { ref, sha }: GithubRefs): string {
-  const version = ref.replace('refs/heads/', '').replace(/\//g, '-')
+  const version = ref.replace('refs/heads/', '').replace(/\//g, '-').toLowerCase()
 
   return timestamped(`${dockerImage}:${version}-${sha.substr(0, 8)}`)
 }
@@ -31,7 +31,7 @@ function getTag(dockerImage: string, githubRefs: GithubRefs): string {
   if (eventName === 'schedule') {
     return `${dockerImage}:nightly`
   } else if (ref.match(/refs\/tags\//)) {
-    return getSmartTagFromTag(dockerImage, ref)
+    return getSmartTagFromTag(dockerImage, githubRefs)
   } else if (ref.match(/refs\/pull\//)) {
     return getSmartTagFromPullRequest(dockerImage, githubRefs)
   } else if (ref.match(/refs\/heads\//)) {
