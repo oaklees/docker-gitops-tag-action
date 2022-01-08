@@ -64,5 +64,5 @@ npm run build
 
 ```
 npm run build
-npm t
+npm run test
 ```
