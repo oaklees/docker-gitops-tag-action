@@ -39,10 +39,10 @@ jobs:
 
 The following inputs can be used as `step.with` keys:
 
-| Name           | Type      | Description                                                                                                  |
-|----------------|-----------|--------------------------------------------------------------------------------------------------------------|
-| `docker_image` | String    | Docker image name to append tags to e.g. `my-repository/my-app`                                              |
-| `tag_prefix`   | String    | Optional tag prefix to prepend to generated tag e.g. `my-repository/my-app:my-prefix-main-<sha>-<timestamp>` |
+| Name           | Type      | Description                                                                                                                                        |
+|----------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `docker_image` | String    | Docker image name to append tags to e.g. `my-repository/my-app`                                                                                    |
+| `tag_prefix`   | String    | Optional tag prefix to prepend to generated tag e.g. providing `my-prefix-` would generate `my-repository/my-app:my-prefix-main-<sha>-<timestamp>` |
 
 [See example config](.github/workflows/test.yml)
 
