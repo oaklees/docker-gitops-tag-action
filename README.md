@@ -25,7 +25,7 @@ jobs:
   steps:
     - name: Generate image tags
       id: prepare
-      uses: oaklees/docker-gitops-tag-action@v0.0.1
+      uses: oaklees/docker-gitops-tag-action@v0.0.2
       with:
         docker_image: repo/app
     - name: Build and push
@@ -39,9 +39,10 @@ jobs:
 
 The following inputs can be used as `step.with` keys:
 
-| Name              | Type      | Description                                   |
-|-------------------|-----------|-----------------------------------------------|
-| `docker_image`    | String    | Docker image name e.g. `my-repository/my-app` |
+| Name           | Type      | Description                                                                                                                                        |
+|----------------|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `docker_image` | String    | Docker image name to append tags to e.g. `my-repository/my-app`                                                                                    |
+| `tag_prefix`   | String    | Optional tag prefix to prepend to generated tag e.g. providing `my-prefix-` would generate `my-repository/my-app:my-prefix-main-<sha>-<timestamp>` |
 
 [See example config](.github/workflows/test.yml)
 

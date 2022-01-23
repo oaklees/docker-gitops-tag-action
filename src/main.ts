@@ -6,6 +6,7 @@ async function run(): Promise<void> {
   try {
     const dockerImage: string = core.getInput('docker_image')
     const customRef: string = core.getInput('ref')
+    const tagPrefix: string = core.getInput('tag_prefix')
 
     const githubRefs: GithubRefs = {
       baseRef: process.env['GITHUB_BASE_REF'] || '',
@@ -14,7 +15,7 @@ async function run(): Promise<void> {
       eventName: process.env['GITHUB_EVENT_NAME'] || 'undefined',
     }
 
-    core.setOutput('tag', getSmartTag(dockerImage, githubRefs))
+    core.setOutput('tag', getSmartTag(dockerImage, githubRefs, tagPrefix))
   } catch (error) {
     core.setFailed(error.message)
   }
