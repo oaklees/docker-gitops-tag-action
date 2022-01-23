@@ -43,13 +43,14 @@ function run() {
         try {
             const dockerImage = core.getInput('docker_image');
             const customRef = core.getInput('ref');
+            const tagPrefix = core.getInput('tag_prefix');
             const githubRefs = {
                 baseRef: process.env['GITHUB_BASE_REF'] || '',
                 ref: customRef || process.env['GITHUB_REF'] || 'noop',
                 sha: process.env['GITHUB_SHA'] || 'undefined',
                 eventName: process.env['GITHUB_EVENT_NAME'] || 'undefined',
             };
-            core.setOutput('tag', smartTag_1.getSmartTag(dockerImage, githubRefs));
+            core.setOutput('tag', smartTag_1.getSmartTag(dockerImage, githubRefs, tagPrefix));
         }
         catch (error) {
             core.setFailed(error.message);
@@ -125,9 +126,9 @@ function getTags(githubRefs) {
     }
     return [`:noop`];
 }
-function getSmartTag(dockerImage, githubRefs) {
+function getSmartTag(dockerImage, githubRefs, tagPrefix) {
     return getTags(githubRefs)
-        .map(tag => `${dockerImage}:${tag}`)
+        .map(tag => `${dockerImage}:${tagPrefix}${tag}`)
         .join(',');
 }
 exports.getSmartTag = getSmartTag;

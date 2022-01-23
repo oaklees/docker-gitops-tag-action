@@ -12,6 +12,7 @@ describe.each([
     // Scheduled run
     'refs/heads/main',
     '',
+    '',
     'schedule',
     'repo/app:nightly',
   ],
@@ -19,12 +20,22 @@ describe.each([
     // Pull request
     'refs/pull/123/merge',
     'refs/heads/topic/some/my_branch',
+    '',
     'pull_request',
     'repo/app:topic-some-my_branch-pr-123-ffac537e-1641647437',
   ],
   [
+    // Pull request and prefix
+    'refs/pull/123/merge',
+    'refs/heads/topic/some/my_branch',
+    'my-prefix-',
+    'pull_request',
+    'repo/app:my-prefix-topic-some-my_branch-pr-123-ffac537e-1641647437',
+  ],
+  [
     // Push branch
     'refs/heads/topic/some/my_branch',
+    '',
     '',
     'push',
     'repo/app:topic-some-my_branch-ffac537e-1641647437',
@@ -33,12 +44,14 @@ describe.each([
     // Push branch with uppercase
     'refs/heads/topic/SOME/my_branch',
     '',
+    '',
     'push',
     'repo/app:topic-some-my_branch-ffac537e-1641647437',
   ],
   [
     // Default branch
     'refs/heads/default',
+    '',
     '',
     'push',
     'repo/app:default-ffac537e-1641647437',
@@ -47,6 +60,7 @@ describe.each([
     // Publish tags (SemVer)
     'refs/tags/v1.0.0',
     '',
+    '',
     'release',
     'repo/app:latest,repo/app:1,repo/app:1.0,repo/app:1.0.0',
   ],
@@ -54,20 +68,25 @@ describe.each([
     // Publish tags (Not SemVer)
     'refs/tags/v1',
     '',
+    '',
     'release',
     'repo/app:latest,repo/app:v1',
   ],
 ])(
-  'Convert: %s, %s, %s, %s => %s',
-  (ref: string, baseRef: string, eventName: string, expected: string) => {
+  'Convert: %s, %s, %s, %s, %s => %s',
+  (ref: string, baseRef: string, tagPrefix: string, eventName: string, expected: string) => {
     test(`getSmartTag ${ref} on ${eventName}`, () => {
       expect(
-        getSmartTag('repo/app', {
-          ref,
-          baseRef,
-          sha,
-          eventName,
-        })
+        getSmartTag(
+          'repo/app',
+          {
+            ref,
+            baseRef,
+            sha,
+            eventName,
+          },
+          tagPrefix
+        )
       ).toEqual(expected)
     })
   }
@@ -76,6 +95,7 @@ describe.each([
 test('test runs', () => {
   process.env['INPUT_DOCKER_IMAGE'] = 'repo/app'
   process.env['INPUT_DEFAULT_BRANCH'] = 'main'
+  process.env['INPUT_TAG_PREFIX'] = 'my-prefix'
   process.env['GITHUB_REF'] = 'refs/heads/topic/some/my_branch'
   process.env['GITHUB_SHA'] = sha
   process.env['GITHUB_EVENT_NAME'] = 'push'

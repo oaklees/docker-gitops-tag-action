@@ -8,6 +8,10 @@ inputs:
   docker_image:
     description: The name of the Docker image prepend the generated tag
     required: true
+  tag_prefix:
+    description: A prefix to apply to the generated tag
+    required: false
+    default: ''
 outputs:
   tag:
     description: Tagged image.

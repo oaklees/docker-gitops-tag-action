@@ -47,9 +47,9 @@ function getTags(githubRefs: GithubRefs): string[] {
   return [`:noop`]
 }
 
-export function getSmartTag(dockerImage: string, githubRefs: GithubRefs): string {
+export function getSmartTag(dockerImage: string, githubRefs: GithubRefs, tagPrefix: string): string {
   return getTags(githubRefs)
-    .map(tag => `${dockerImage}:${tag}`)
+    .map(tag => `${dockerImage}:${tagPrefix}${tag}`)
     .join(',')
 }
 
